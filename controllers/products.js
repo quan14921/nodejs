@@ -5,19 +5,25 @@ import Product from '../models/products'
 //     {id:2,name:"Product 2"}
 // ]
 
-export const listProduct = (request,response)=>{
+
+// list sản phẩm
+export const listProduct = async (request,response)=>{
     try{
-        const product = Product.find().exec()
+        const product = await Product.find().exec()
         response.json(product)
         // response.json(products)
     }catch(error){
         response.status(400).json({message:"Khong tim thay data"})
     }
 }
-export const listProductDetail = (request,response)=>{
-    const product = products.find(item => item.id === +request.params.id)
+
+
+export const listProductDetail = async (request,response)=>{
+    const product = await products.findById({_id:request.params.id}).exec()
     response.json(product)
 }
+
+// thêm sản phẩm
 export const createProduct = async (request,response)=>{
     try{
         const product = await Product((request.body)).save()
@@ -29,6 +35,8 @@ export const createProduct = async (request,response)=>{
     // products.push(request.body)
     // response.json(products)
 }
+
+// xóa sản phẩm
 export const deleteProduct = async (request,response)=>{
     try{
         const product = await products.findOneAndDelete({_id:request.params.id}).exec()
@@ -38,6 +46,10 @@ export const deleteProduct = async (request,response)=>{
 }
     
 }
-export const updateProduct = (request,response)=>{
-    response.json(products.map(item => item.id === +request.params.id? request.body:item))
+export const updateProduct = async (request,response)=>{
+    try {
+        const product = await products.findOneAndUpdate({_id:request.params.id}, request.body)
+    } catch (error) {
+        response.status(400).json({message:"ko sửa được"})
+    }
 }
