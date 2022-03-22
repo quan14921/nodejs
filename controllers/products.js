@@ -49,6 +49,7 @@ export const deleteProduct = async (request,response)=>{
 export const updateProduct = async (request,response)=>{
     try {
         const product = await products.findOneAndUpdate({_id:request.params.id}, request.body)
+        response.json(product);
     } catch (error) {
         response.status(400).json({message:"ko sửa được"})
     }

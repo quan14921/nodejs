@@ -1,6 +1,7 @@
 import express from "express";
 import homeRoute from "./routes/home"
 import productRoute from "./routes/product"
+import categoryRoute from './routes/category'
 import { checkAuth } from "./middlewares/checkAuth";
 import mongoose from "mongoose";
 const app = express();
@@ -11,6 +12,7 @@ app.use(express.json())
 app.use(homeRoute);
 app.use(checkAuth,productRoute);
 app.use("/api",checkAuth,productRoute);
+app.use("/api",categoryRoute)
 
 
 
