@@ -1,4 +1,5 @@
-import User from '../models/user'
+import User from '../models/user';
+import jwt from 'jsonwebtoken';
 
 export const signup = async (request,response)=>{
     const {email,name,password} = request.body
@@ -18,34 +19,39 @@ export const signup = async (request,response)=>{
             }
         })
     } catch (error) {
-        console.log(error);
+        response.status(400).json({
+            message: "Đăng ký thất bại"
+        })
     }
 }
 
 
-
-
-
-
-
-export const signin = async (request,response)=>{
-    const {email,password} = request.body
-    const user = await User.findOne({email}).exec()
-    if(!user){
-        return response.status(400).json({
-            message:"User khong ton tai"
-        })
-    }
-    if(!user.authenticate(password)){
-        return response.status(400).json({
-            message:"Mat khau khong dung"
-        })
-    }
-    response.json({
-        user:{
-            _id:user._id,
-            email:user.email,
-            name:user.name
+export const signin = async (req, res) => {
+    const { email, password} = req.body;
+    try {
+        const user = await User.findOne({email}).exec();
+        if(!user){
+            res.status(400).json({
+                message: "Email không tồn tại"
+            })
         }
-    })
+        if(!user.authenticate(password)){
+            res.status(400).json({
+                message: "Mật khẩu không đúng"
+            })
+        }
+        const token = jwt.sign({_id: user._id}, "123456", { expiresIn: '1h'})
+        res.json({
+            token,
+            user: {
+                _id: user._id,
+                email: user.email,
+                name: user.name
+            }
+        })
+    } catch (error) {
+        res.status(400).json({
+            message: "Đăng nhập thất bại"
+        })
+    }
 }
